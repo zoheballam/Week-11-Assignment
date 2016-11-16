@@ -1,0 +1,45 @@
+---
+title: "Week 11 Lecture Assignment"
+author: "Zoheb Allam"
+date: "November 16, 2016"
+output: html_document
+---
+
+The following R code is for the stock CO. The code below downloads the data file and then calculates volatility using the following equation. 
+```{r}
+library(tseries)
+COdata <- get.hist.quote('CO',quote="Close")
+length(COdata)
+COret <- log(lag(COdata)) - log(COdata)
+length(COret)
+SNPvol <- sd(COret) * sqrt(250) * 100
+SNPvol
+```
+
+This code chunk creates a function for volatility. 
+```{r}
+Vol <- function (d,logrets) {
+  var=0
+  lam=0
+  varlist <- c()
+  for (r in logrets) {
+    lam= lam*(1-1/d) + 1
+  var = (1-1/lam) *var + (1/lam) * r^2
+        varlist <- c(varlist, var)
+  }
+  sqrt(varlist)
+  }
+
+```
+
+This code chuck tests volatility using 3 different decay factors. 
+```{r}
+volest <- Vol(10,COret)
+volest2 <- Vol(30,COret)
+volest3 <- Vol(100,COret)
+plot (volest, type="l")
+lines(volest2, type="l", col="red")
+lines(volest3, type="l", col="blue")
+```
+
+
